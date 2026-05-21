@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spokes AI Agents | Knowledge26 Lab</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Outfit',sans-serif;background:#061525;color:#e8f4f8;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
+    .header-img,.footer-img{width:100%;display:block;flex-shrink:0;}
+    .qwrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+    .card{background:rgba(10,31,51,0.85);border:1px solid rgba(98,216,78,0.15);border-radius:12px;padding:32px 24px;max-width:400px;width:100%;box-shadow:0 0 0 0;}
+    .q{font-size:1.2rem;font-weight:600;margin-bottom:18px;}
+    .opts{display:grid;gap:12px;margin-bottom:18px;}
+    .opt{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border-radius:10px;padding:12px 24px;cursor:pointer;border:none;transition:transform .1s;}
+    .opt:active{transform:scale(0.97);}
+    .opt[disabled]{opacity:.5;cursor:default;}
+    .stat{color:#7a9bb5;font-size:.98rem;margin-bottom:10px;min-height:22px;}
+    .score{font-size:1.1rem;font-weight:500;margin-bottom:18px;}
+    .btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border-radius:10px;padding:12px 24px;cursor:pointer;border:none;}
+    @media(max-width:500px){.card{padding:18px 4px;}}
+  </style>
+</head>
+<body>
+  <img src="https://raw.githubusercontent.com/testmail-ihub/spokes-ai-assets/main/header-banner.jpg" class="header-img" alt="Header" style="min-height:140px;background:#061525;" />
+  <div class="qwrap">
+    <div class="card" id="quiz">
+      <div class="score" id="score"></div>
+      <div class="q" id="question"></div>
+      <div class="opts" id="options"></div>
+      <div class="stat" id="status"></div>
+      <button class="btn" id="next" style="display:none;">Next</button>
+      <button class="btn" id="restart" style="display:none;">Restart</button>
+    </div>
+  </div>
+  <img src="https://raw.githubusercontent.com/testmail-ihub/spokes-ai-assets/main/footer-banner.jpg" class="footer-img" alt="Footer" style="min-height:28px;background:#0a1f33;" />
+  <script>
+const qz=[
+  {q:"What is the codename for the ServiceNow release launched in Q1 2024?",o:["Washington","Utah","Vancouver","Orlando"],a:2},
+  {q:"Which ServiceNow release introduced Flow Designer?",o:["London","Madrid","Orlando","Paris"],a:1},
+  {q:"What year was the ServiceNow 'Quebec' release launched?",o:["2020","2021","2019","2022"],a:1},
+  {q:"Which release first featured the Now Experience UI Framework?",o:["Paris","Orlando","Rome","Quebec"],a:0},
+  {q:"What is the codename for the ServiceNow release after 'Utah'?",o:["Vancouver","Tokyo","San Diego","Rome"],a:0}
+];
+let idx=0,score=0,locked=0;
+const qEl=document.getElementById('question'),oEl=document.getElementById('options'),sEl=document.getElementById('status'),scEl=document.getElementById('score'),nBtn=document.getElementById('next'),rBtn=document.getElementById('restart');
+function showQ(){
+  locked=0;
+  const q=qz[idx];
+  qEl.textContent=q.q;
+  oEl.innerHTML='';
+  q.o.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=t;
+    b.onclick=()=>pick(i);
+    oEl.appendChild(b);
+  });
+  sEl.textContent='';
+  nBtn.style.display='none';
+  scEl.textContent=`Question ${idx+1} of 5`;
+}
+function pick(i){
+  if(locked)return;
+  locked=1;
+  const q=qz[idx];
+  const opts=oEl.children;
+  for(let j=0;j<opts.length;j++)opts[j].disabled=1;
+  if(i===q.a){
+    sEl.textContent='Correct!';
+    score++;
+    opts[i].style.background='#62d84e';
+    opts[i].style.color='#061525';
+  }else{
+    sEl.textContent='Oops!';
+    opts[i].style.background='#e74c3c';
+    opts[i].style.color='#fff';
+    opts[q.a].style.background='#62d84e';
+    opts[q.a].style.color='#061525';
+  }
+  nBtn.style.display='block';
+  if(idx===4)nBtn.textContent='Show Score';else nBtn.textContent='Next';
+}
+nBtn.onclick=()=>{
+  if(idx<4){idx++;showQ();}else showScore();
+};
+function showScore(){
+  qEl.textContent='Quiz Complete!';
+  oEl.innerHTML='';
+  sEl.textContent=`You scored ${score} out of 5.`;
+  scEl.textContent='';
+  nBtn.style.display='none';
+  rBtn.style.display='block';
+}
+rBtn.onclick=()=>{idx=0;score=0;rBtn.style.display='none';showQ();};
+showQ();
+  </script>
+</body>
+</html>
