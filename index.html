@@ -7,113 +7,72 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Outfit',sans-serif;background:#061525;color:#e8f4f8;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
-    .header-img,.footer-img{width:100%;display:block;flex-shrink:0}
-    .quiz-wrap{background:rgba(10,31,51,0.85);border:1px solid rgba(98,216,78,0.15);border-radius:12px;padding:32px 20px;max-width:420px;width:100%;box-shadow:0 0 20px rgba(0,199,177,0.08)}
-    .q{margin-bottom:24px}
-    .q-t{font-size:1.1rem;font-weight:600;margin-bottom:10px;color:#e8f4f8}
-    .opts{display:flex;flex-direction:column;gap:8px}
-    .opt{background:rgba(6,21,37,0.8);border:1px solid rgba(98,216,78,0.2);color:#e8f4f8;border-radius:8px;padding:10px 14px;cursor:pointer;transition:background .15s,border .15s}
-    .opt.selected{border:2px solid #00c7b1;background:rgba(0,199,177,0.12)}
-    .opt.correct{border:2px solid #62d84e;background:rgba(98,216,78,0.12)}
-    .opt.incorrect{border:2px solid #d81547;background:rgba(216,21,71,0.12)}
-    .submit-btn{margin:18px 0 0 0;background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;font-size:1rem;transition:transform .1s,box-shadow .1s}
-    .submit-btn:hover{transform:translateY(-2px);box-shadow:0 0 8px #62d84e}
-    .score{font-size:1.1rem;font-weight:600;color:#62d84e;margin:18px 0 0 0;text-align:center}
-    @media(max-width:600px){.quiz-wrap{padding:18px 4px}}
+    body{font-family:'Outfit',sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+    .header-img{width:100%;display:block;min-height:140px;background:#061525}
+    .footer-img{width:100%;display:block;min-height:28px;background:#0a1f33}
+    .game-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+    .snake-card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:32px 24px;box-shadow:0 2px 8px rgba(0,0,0,0.04);min-width:320px;max-width:360px}
+    .score{font-size:1.2rem;font-weight:600;margin-bottom:12px;color:#00c7b1;text-align:center}
+    .snake-canvas{background:#f5f5f5;border:2px solid #62d84e;border-radius:8px;display:block;margin:0 auto}
+    .btn{margin:18px auto 0 auto;display:block;background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;transition:transform .1s}
+    .btn:active{transform:scale(0.97)}
+    .game-over{color:#d01547;font-weight:700;text-align:center;margin-top:16px}
+    @media(max-width:500px){.snake-card{padding:16px 4px;min-width:0;max-width:98vw}}
   </style>
 </head>
 <body>
-  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.jpg" class="header-img" alt="Header" style="min-height:140px; background:#061525;" />
-  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;">
-    <div class="quiz-wrap" id="quiz">
-      <div class="q" data-idx="0">
-        <div class="q-t">1. What is a ServiceNow table?</div>
-        <div class="opts">
-          <div class="opt">A. A database structure to store records</div>
-          <div class="opt">B. A UI component for dashboards</div>
-          <div class="opt">C. A workflow activity</div>
-          <div class="opt">D. A notification template</div>
-        </div>
-      </div>
-      <div class="q" data-idx="1">
-        <div class="q-t">2. Which module is used for automating business processes?</div>
-        <div class="opts">
-          <div class="opt">A. Service Catalog</div>
-          <div class="opt">B. Flow Designer</div>
-          <div class="opt">C. Knowledge Base</div>
-          <div class="opt">D. Reports</div>
-        </div>
-      </div>
-      <div class="q" data-idx="2">
-        <div class="q-t">3. What is a best practice for ServiceNow form design?</div>
-        <div class="opts">
-          <div class="opt">A. Add as many fields as possible</div>
-          <div class="opt">B. Use clear labels and group related fields</div>
-          <div class="opt">C. Hide all mandatory fields</div>
-          <div class="opt">D. Avoid using sections</div>
-        </div>
-      </div>
-      <div class="q" data-idx="3">
-        <div class="q-t">4. What does the "Incident" table track?</div>
-        <div class="opts">
-          <div class="opt">A. Change requests</div>
-          <div class="opt">B. User accounts</div>
-          <div class="opt">C. IT issues and outages</div>
-          <div class="opt">D. Knowledge articles</div>
-        </div>
-      </div>
-      <div class="q" data-idx="4">
-        <div class="q-t">5. What is a "Business Rule" in ServiceNow?</div>
-        <div class="opts">
-          <div class="opt">A. A UI policy for forms</div>
-          <div class="opt">B. A server-side script for table logic</div>
-          <div class="opt">C. A report filter</div>
-          <div class="opt">D. A workflow activity</div>
-        </div>
-      </div>
-      <button class="submit-btn" id="submit">Submit Answers</button>
-      <div class="score" id="score"></div>
+  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.jpg" class="header-img" alt="Header" />
+  <div class="game-wrap">
+    <div class="snake-card">
+      <div class="score" id="score">Score: 0</div>
+      <canvas id="snake" width="240" height="240" class="snake-canvas" tabindex="0"></canvas>
+      <button class="btn" id="restart" style="display:none">Restart</button>
+      <div class="game-over" id="gameover" style="display:none">Game Over!</div>
     </div>
   </div>
-  <img src="" class="footer-img" alt="Footer" style="min-height:28px; background:#0a1f33;" />
+  <img src="" class="footer-img" alt="Footer" />
   <script>
-    const answers=[0,1,1,2,1];
-    const quiz=document.getElementById('quiz');
-    const scoreDiv=document.getElementById('score');
-    let selected=[-1,-1,-1,-1,-1];
-    document.querySelectorAll('.opts').forEach((opts,i)=>{
-      opts.querySelectorAll('.opt').forEach((opt,j)=>{
-        opt.onclick=()=>{
-          if(scoreDiv.textContent) return;
-          opts.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
-          opt.classList.add('selected');
-          selected[i]=j;
-        }
-      })
-    });
-    document.getElementById('submit').onclick=()=>{
-      if(scoreDiv.textContent) return;
-      let correct=0;
-      document.querySelectorAll('.q').forEach((q,i)=>{
-        const opts=q.querySelectorAll('.opt');
-        opts.forEach((opt,j)=>{
-          opt.classList.remove('correct','incorrect');
-          if(selected[i]===-1) return;
-          if(j===answers[i]){
-            opt.classList.add('correct');
-            if(selected[i]===j) correct++;
-          }else if(selected[i]===j){
-            opt.classList.add('incorrect');
-          }
-        })
-      });
-      let msg=`You scored ${correct}/5!`;
-      if(correct===5)msg+=' 🏆';
-      else if(correct>=3)msg+=' Great job!';
-      else msg+=' Keep learning!';
-      scoreDiv.textContent=msg;
+    const canvas=document.getElementById('snake'),ctx=canvas.getContext('2d'),box=24,rows=10,cols=10;
+    let snake,dir,food,score,dead,moveInt;
+    function reset(){
+      snake=[{x:4,y:5}],dir='RIGHT',food=randFood(),score=0,dead=false;
+      document.getElementById('score').textContent='Score: '+score;
+      document.getElementById('gameover').style.display='none';
+      document.getElementById('restart').style.display='none';
+      clearInterval(moveInt);moveInt=setInterval(move,120);draw();
     }
+    function randFood(){
+      let f;do{f={x:Math.floor(Math.random()*cols),y:Math.floor(Math.random()*rows)}}
+      while(snake.some(s=>s.x===f.x&&s.y===f.y));return f;
+    }
+    function move(){
+      let head={...snake[0]};
+      if(dir==='LEFT')head.x--;else if(dir==='RIGHT')head.x++;else if(dir==='UP')head.y--;else if(dir==='DOWN')head.y++;
+      if(head.x<0||head.x>=cols||head.y<0||head.y>=rows||snake.some(s=>s.x===head.x&&s.y===head.y)){
+        dead=true;clearInterval(moveInt);
+        document.getElementById('gameover').style.display='block';
+        document.getElementById('restart').style.display='block';return;
+      }
+      snake.unshift(head);
+      if(head.x===food.x&&head.y===food.y){score++;document.getElementById('score').textContent='Score: '+score;food=randFood();}
+      else snake.pop();
+      draw();
+    }
+    function draw(){
+      ctx.clearRect(0,0,box*cols,box*rows);
+      ctx.fillStyle='#62d84e';snake.forEach((s,i)=>{ctx.fillRect(s.x*box,s.y*box,box,box)});
+      ctx.fillStyle='#d01547';ctx.fillRect(food.x*box,food.y*box,box,box);
+    }
+    document.addEventListener('keydown',e=>{
+      if(dead)return;
+      if(e.key==='ArrowLeft'&&dir!=='RIGHT')dir='LEFT';
+      else if(e.key==='ArrowUp'&&dir!=='DOWN')dir='UP';
+      else if(e.key==='ArrowRight'&&dir!=='LEFT')dir='RIGHT';
+      else if(e.key==='ArrowDown'&&dir!=='UP')dir='DOWN';
+    });
+    document.getElementById('restart').onclick=reset;
+    canvas.addEventListener('click',()=>canvas.focus());
+    reset();
   </script>
 </body>
 </html>
