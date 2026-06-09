@@ -10,71 +10,75 @@
     body{font-family:'Outfit',sans-serif;background:#061525;color:#e8f4f8;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
     .header-img,.footer-img{width:100%;display:block;flex-shrink:0}
     .c{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
-    .g{background:rgba(10,31,51,0.85);border:1px solid rgba(98,216,78,0.15);border-radius:12px;padding:32px 28px;max-width:370px;box-shadow:0 0 20px rgba(98,216,78,0.08)}
-    .t{font-size:2rem;font-weight:700;margin-bottom:10px;color:#62d84e;text-align:center}
-    .i{color:#7a9bb5;font-size:1rem;margin-bottom:18px;text-align:center}
-    .s{display:grid;grid-template:repeat(16,18px)/repeat(16,18px);gap:2px;margin:0 auto 18px auto;background:#0e2d47;border-radius:8px}
-    .cell{width:18px;height:18px;border-radius:3px}
-    .snake{background:#62d84e}
-    .food{background:#00c7b1}
-    .score{font-size:1.1rem;font-weight:600;margin-bottom:10px;text-align:center}
-    .over{color:#e74c3c;font-weight:700;font-size:1.2rem;margin:10px 0;text-align:center}
-    .btn{display:block;margin:12px auto 0 auto;padding:10px 28px;background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:transform .1s}
-    .btn:active{transform:translateY(2px)}
-    @media(max-width:500px){.g{padding:18px 4px}.s{gap:1px}.t{font-size:1.3rem}}
+    .qz{background:rgba(10,31,51,0.85);border:1px solid rgba(98,216,78,0.15);border-radius:12px;padding:32px 24px;max-width:420px;width:100%;box-shadow:0 0 0 0}
+    .qz h1{font-size:2rem;font-weight:700;margin-bottom:8px;color:#62d84e}
+    .qz p{color:#7a9bb5;margin-bottom:20px}
+    .q{margin-bottom:18px}
+    .qtxt{font-weight:600;margin-bottom:10px;display:block}
+    .opts{display:grid;gap:10px}
+    .opt{background:rgba(6,21,37,0.8);border:1px solid rgba(98,216,78,0.2);color:#e8f4f8;border-radius:8px;padding:10px 16px;cursor:pointer;transition:none;font-size:1rem;text-align:left}
+    .opt.sel{background:#62d84e;color:#061525;border-color:#62d84e}
+    .opt.wrong{background:#c72c41;color:#fff;border-color:#c72c41}
+    .opt.correct{background:#62d84e;color:#061525;border-color:#62d84e}
+    .btn{margin-top:18px;background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;font-size:1rem}
+    .btn:active{transform:translateY(1px)}
+    .score{font-size:1.2rem;font-weight:600;margin:18px 0 8px 0;color:#00c7b1}
+    @media(max-width:500px){.qz{padding:18px 4px}}
   </style>
 </head>
 <body>
-  <img src="https://raw.githubusercontent.com/testmail-ihub/spokes-ai-assets/main/header-banner.jpg" class="header-img" alt="Header" style="min-height:140px; background:#061525;" />
+  <img src="https://raw.githubusercontent.com/testmail-ihub/spokes-ai-assets/main/header-banner.jpg" class="header-img" alt="Header" style="min-height:140px;background:#061525;" />
   <div class="c">
-    <div class="g">
-      <div class="t">Snake Game</div>
-      <div class="i">Use your arrow keys to move the snake. Eat the teal food to grow. Don't hit the walls or yourself!<br>Press <b>Restart</b> to play again.</div>
-      <div class="score" id="score">Score: 0</div>
-      <div class="s" id="board"></div>
-      <div class="over" id="over" style="display:none">Game Over!</div>
-      <button class="btn" id="restart">Restart</button>
+    <div class="qz" id="quiz">
+      <h1>ServiceNow Trivia</h1>
+      <p id="desc">Test your ServiceNow knowledge! Select the best answer for each question. Good luck!</p>
+      <div id="qwrap"></div>
+      <button class="btn" id="nextBtn" style="display:none">Next</button>
+      <div id="scoreWrap" style="display:none"></div>
+      <button class="btn" id="restartBtn" style="display:none">Restart</button>
     </div>
   </div>
-  <img src="https://raw.githubusercontent.com/testmail-ihub/spokes-ai-assets/main/footer-banner.jpg" class="footer-img" alt="Footer" style="min-height:28px; background:#0a1f33;" />
+  <img src="https://raw.githubusercontent.com/testmail-ihub/spokes-ai-assets/main/footer-banner.jpg" class="footer-img" alt="Footer" style="min-height:28px;background:#0a1f33;" />
   <script>
-    const N=16,board=document.getElementById('board'),scoreEl=document.getElementById('score'),overEl=document.getElementById('over'),restartBtn=document.getElementById('restart');
-    let snake,dir,food,score,interval,tick,dead;
-    function init(){
-      snake=[[8,8]],dir=[0,-1],food=spawn(),score=0,dead=0,tick=180;
-      render();scoreEl.textContent='Score: 0';overEl.style.display='none';
-      clearInterval(interval);interval=setInterval(move,tick);
+    const qs=[
+      {q:'What is ServiceNow primarily known for?',o:['IT Service Management','CRM','E-commerce','Cloud Storage'],a:0},
+      {q:'Which language is used for scripting in ServiceNow?',o:['JavaScript','Python','Ruby','PHP'],a:0},
+      {q:'What is a ServiceNow "Incident"?',o:['A request for new hardware','A record of an unplanned interruption','A scheduled change','A user profile'],a:1},
+      {q:'Which module automates workflows in ServiceNow?',o:['Flow Designer','Asset Manager','Survey Builder','Knowledge Base'],a:0},
+      {q:'What is the default database for ServiceNow?',o:['Oracle','MySQL','PostgreSQL','MariaDB'],a:1}
+    ];
+    let qi=0,score=0,answered=false;
+    const qwrap=document.getElementById('qwrap'),nextBtn=document.getElementById('nextBtn'),scoreWrap=document.getElementById('scoreWrap'),restartBtn=document.getElementById('restartBtn');
+    function showQ(){
+      answered=false;nextBtn.style.display='none';scoreWrap.style.display='none';restartBtn.style.display='none';
+      const q=qs[qi];
+      let h='<div class="q"><span class="qtxt">'+(qi+1)+'. '+q.q+'</span><div class="opts">';
+      q.o.forEach((opt,i)=>{h+='<button class="opt" onclick="selOpt('+i+')" id="opt'+i+'">'+opt+'</button>'});
+      h+='</div></div>';qwrap.innerHTML=h;
     }
-    function spawn(){
-      let f;do{f=[Math.floor(Math.random()*N),Math.floor(Math.random()*N)]}while(snake.some(([x,y])=>x===f[0]&&y===f[1]));return f;
-    }
-    function move(){
-      if(dead)return;
-      const h=[snake[0][0]+dir[0],snake[0][1]+dir[1]];
-      if(h[0]<0||h[0]>=N||h[1]<0||h[1]>=N||snake.some(([x,y])=>x===h[0]&&y===h[1])){dead=1;overEl.style.display='block';clearInterval(interval);return;}
-      snake.unshift(h);
-      if(h[0]===food[0]&&h[1]===food[1]){score++;scoreEl.textContent='Score: '+score;food=spawn();if(tick>60){tick-=8;clearInterval(interval);interval=setInterval(move,tick);}}else snake.pop();
-      render();
-    }
-    function render(){
-      board.innerHTML='';
-      for(let y=0;y<N;y++)for(let x=0;x<N;x++){
-        const d=document.createElement('div');d.className='cell';
-        if(snake.some(([sx,sy])=>sx===x&&sy===y))d.classList.add('snake');
-        if(food[0]===x&&food[1]===y)d.classList.add('food');
-        board.appendChild(d);
+    window.selOpt=function(i){
+      if(answered)return;answered=true;
+      const q=qs[qi];
+      for(let j=0;j<q.o.length;j++){
+        const b=document.getElementById('opt'+j);
+        b.classList.remove('sel','wrong','correct');
+        if(j===i) b.classList.add(i===q.a?'correct':'wrong');
+        if(j===q.a) b.classList.add('correct');
+        b.disabled=true;
       }
+      if(i===q.a)score++;
+      nextBtn.style.display='inline-block';
+      if(qi===qs.length-1)nextBtn.textContent='Show Score';else nextBtn.textContent='Next';
     }
-    document.addEventListener('keydown',e=>{
-      if(dead)return;
-      const k=e.key;
-      if(k==='ArrowUp'&&dir[1]!==1)dir=[0,-1];
-      else if(k==='ArrowDown'&&dir[1]!==-1)dir=[0,1];
-      else if(k==='ArrowLeft'&&dir[0]!==1)dir=[-1,0];
-      else if(k==='ArrowRight'&&dir[0]!==-1)dir=[1,0];
-    });
-    restartBtn.onclick=init;
-    init();
+    nextBtn.onclick=function(){
+      if(qi<qs.length-1){qi++;showQ();}else showScore();
+    }
+    function showScore(){
+      qwrap.innerHTML='';nextBtn.style.display='none';scoreWrap.style.display='block';scoreWrap.innerHTML='<div class="score">You scored '+score+' out of '+qs.length+'!</div>';
+      restartBtn.style.display='inline-block';
+    }
+    restartBtn.onclick=function(){qi=0;score=0;showQ();}
+    showQ();
   </script>
 </body>
 </html>
