@@ -3,82 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spokes AI Agents | Knowledge26 Lab</title>
+  <title>AI Agent Demo | TechFest</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Outfit',sans-serif;background:#061525;color:#e8f4f8;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+    body{font-family:'Outfit',sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
     .header-img,.footer-img{width:100%;display:block;flex-shrink:0}
-    .c{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
-    .qz{background:rgba(10,31,51,0.85);border:1px solid rgba(98,216,78,0.15);border-radius:12px;padding:32px 24px;max-width:420px;width:100%;box-shadow:0 0 0 0}
-    .qz h1{font-size:2rem;font-weight:700;margin-bottom:8px;color:#62d84e}
-    .qz p{color:#7a9bb5;margin-bottom:20px}
-    .q{margin-bottom:18px}
-    .qtxt{font-weight:600;margin-bottom:10px;display:block}
-    .opts{display:grid;gap:10px}
-    .opt{background:rgba(6,21,37,0.8);border:1px solid rgba(98,216,78,0.2);color:#e8f4f8;border-radius:8px;padding:10px 16px;cursor:pointer;transition:none;font-size:1rem;text-align:left}
-    .opt.sel{background:#62d84e;color:#061525;border-color:#62d84e}
-    .opt.wrong{background:#c72c41;color:#fff;border-color:#c72c41}
-    .opt.correct{background:#62d84e;color:#061525;border-color:#62d84e}
-    .btn{margin-top:18px;background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;font-size:1rem}
-    .btn:active{transform:translateY(1px)}
-    .score{font-size:1.2rem;font-weight:600;margin:18px 0 8px 0;color:#00c7b1}
-    @media(max-width:500px){.qz{padding:18px 4px}}
+    .content{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+    .card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);padding:32px 28px;max-width:400px;width:100%;text-align:center}
+    .btn{background:#1a1a1a;color:#fff;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;transition:background 0.2s}
+    .btn:hover{background:#333}
+    @media(max-width:600px){.card{padding:20px 8px}}
   </style>
 </head>
 <body>
-  <img src="https://raw.githubusercontent.com/testmail-ihub/spokes-ai-assets/main/header-banner.jpg" class="header-img" alt="Header" style="min-height:140px;background:#061525;" />
-  <div class="c">
-    <div class="qz" id="quiz">
-      <h1>ServiceNow Trivia</h1>
-      <p id="desc">Test your ServiceNow knowledge! Select the best answer for each question. Good luck!</p>
-      <div id="qwrap"></div>
-      <button class="btn" id="nextBtn" style="display:none">Next</button>
-      <div id="scoreWrap" style="display:none"></div>
-      <button class="btn" id="restartBtn" style="display:none">Restart</button>
+  <img src="https://github.com/adamlaubach/commit-genie/blob/4d617a5c43df9b0a22ad1767c479ed299ec1129d/DevTechnology_LogoWhiteBG.png" class="header-img" alt="Header" style="min-height:140px; background:#061525;" />
+  <div class="content">
+    <div class="card">
+      <h1>Welcome to AI Agent Demo!</h1>
+      <p>This is a sample HTML page generated with the TechFest theme. Click the button below to see it in action.</p>
+      <button class="btn" id="demoBtn">Show Alert</button>
     </div>
   </div>
-  <img src="https://raw.githubusercontent.com/testmail-ihub/spokes-ai-assets/main/footer-banner.jpg" class="footer-img" alt="Footer" style="min-height:28px;background:#0a1f33;" />
+  <img src="https://raw.githubusercontent.com/testmail-ihub/spokes-ai-assets/main/footer-banner.jpg" class="footer-img" alt="Footer" style="min-height:28px; background:#0a1f33;" />
   <script>
-    const qs=[
-      {q:'What is ServiceNow primarily known for?',o:['IT Service Management','CRM','E-commerce','Cloud Storage'],a:0},
-      {q:'Which language is used for scripting in ServiceNow?',o:['JavaScript','Python','Ruby','PHP'],a:0},
-      {q:'What is a ServiceNow "Incident"?',o:['A request for new hardware','A record of an unplanned interruption','A scheduled change','A user profile'],a:1},
-      {q:'Which module automates workflows in ServiceNow?',o:['Flow Designer','Asset Manager','Survey Builder','Knowledge Base'],a:0},
-      {q:'What is the default database for ServiceNow?',o:['Oracle','MySQL','PostgreSQL','MariaDB'],a:1}
-    ];
-    let qi=0,score=0,answered=false;
-    const qwrap=document.getElementById('qwrap'),nextBtn=document.getElementById('nextBtn'),scoreWrap=document.getElementById('scoreWrap'),restartBtn=document.getElementById('restartBtn');
-    function showQ(){
-      answered=false;nextBtn.style.display='none';scoreWrap.style.display='none';restartBtn.style.display='none';
-      const q=qs[qi];
-      let h='<div class="q"><span class="qtxt">'+(qi+1)+'. '+q.q+'</span><div class="opts">';
-      q.o.forEach((opt,i)=>{h+='<button class="opt" onclick="selOpt('+i+')" id="opt'+i+'">'+opt+'</button>'});
-      h+='</div></div>';qwrap.innerHTML=h;
-    }
-    window.selOpt=function(i){
-      if(answered)return;answered=true;
-      const q=qs[qi];
-      for(let j=0;j<q.o.length;j++){
-        const b=document.getElementById('opt'+j);
-        b.classList.remove('sel','wrong','correct');
-        if(j===i) b.classList.add(i===q.a?'correct':'wrong');
-        if(j===q.a) b.classList.add('correct');
-        b.disabled=true;
-      }
-      if(i===q.a)score++;
-      nextBtn.style.display='inline-block';
-      if(qi===qs.length-1)nextBtn.textContent='Show Score';else nextBtn.textContent='Next';
-    }
-    nextBtn.onclick=function(){
-      if(qi<qs.length-1){qi++;showQ();}else showScore();
-    }
-    function showScore(){
-      qwrap.innerHTML='';nextBtn.style.display='none';scoreWrap.style.display='block';scoreWrap.innerHTML='<div class="score">You scored '+score+' out of '+qs.length+'!</div>';
-      restartBtn.style.display='inline-block';
-    }
-    restartBtn.onclick=function(){qi=0;score=0;showQ();}
-    showQ();
+    document.getElementById('demoBtn').onclick=function(){alert('Hello from your AI Agent Demo!')}
   </script>
 </body>
 </html>
