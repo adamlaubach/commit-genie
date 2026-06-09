@@ -8,26 +8,30 @@
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Outfit',sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
-    .header-img,.footer-img{width:100%;display:block;flex-shrink:0}
-    .content{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
-    .card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);padding:32px 28px;max-width:400px;width:100%;text-align:center}
-    .btn{background:#1a1a1a;color:#fff;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;transition:background 0.2s}
-    .btn:hover{background:#333}
-    @media(max-width:600px){.card{padding:20px 8px}}
+    .header-img,.footer-img{width:100%;display:block;flex-shrink:0;min-height:140px;background:#061525}
+    .footer-img{min-height:28px;background:#0a1f33}
+    .game-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+    .snake-card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:32px 24px;box-shadow:0 2px 8px rgba(0,0,0,0.04);max-width:360px;width:100%;display:flex;flex-direction:column;align-items:center}
+    .score{font-size:1.2rem;font-weight:600;margin-bottom:16px;color:#1a1a1a}
+    .snake-canvas{background:#f5f5f5;border:2px solid #1a1a1a;border-radius:8px;display:block;margin-bottom:16px}
+    .btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;transition:transform .1s}
+    .btn:active{transform:translateY(2px)}
+    @media(max-width:500px){.snake-card{padding:16px 4px;max-width:98vw}.game-wrap{padding:12px 2px}}
   </style>
 </head>
 <body>
-  <img src="https://github.com/adamlaubach/commit-genie/blob/4d617a5c43df9b0a22ad1767c479ed299ec1129d/DevTechnology_LogoWhiteBG.png" class="header-img" alt="Header" style="min-height:140px; background:#061525;" />
-  <div class="content">
-    <div class="card">
-      <h1>Welcome to AI Agent Demo!</h1>
-      <p>This is a sample HTML page generated with the TechFest theme. Click the button below to see it in action.</p>
-      <button class="btn" id="demoBtn">Show Alert</button>
+  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/DevTechnology_LogoWhiteBG.png" class="header-img" alt="Header" />
+  <div class="game-wrap">
+    <div class="snake-card">
+      <div class="score" id="score">Score: 0</div>
+      <canvas id="snake" class="snake-canvas" width="300" height="300" tabindex="0"></canvas>
+      <button class="btn" id="restart">Restart</button>
+      <div id="status" style="margin-top:8px;font-size:.98rem;color:#7a9bb5"></div>
     </div>
   </div>
-  <img src="https://raw.githubusercontent.com/testmail-ihub/spokes-ai-assets/main/footer-banner.jpg" class="footer-img" alt="Footer" style="min-height:28px; background:#0a1f33;" />
+  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/DevTechnology_LogoWhiteBG.png" class="footer-img" alt="Footer" />
   <script>
-    document.getElementById('demoBtn').onclick=function(){alert('Hello from your AI Agent Demo!')}
+    const c=document.getElementById('snake'),ctx=c.getContext('2d'),sz=15,cells=20;let snake,dir,food,score,alive,moveQ=[];function reset(){snake=[[10,10]],dir='r',food=randFood(),score=0,alive=1,moveQ=[],updateScore(),draw(),setStatus('Use arrow keys to play!')}function randFood(){let f;do{f=[Math.floor(Math.random()*cells),Math.floor(Math.random()*cells)]}while(snake.some(([x,y])=>x===f[0]&&y===f[1]));return f}function updateScore(){document.getElementById('score').textContent='Score: '+score}function setStatus(t){document.getElementById('status').textContent=t}function draw(){ctx.fillStyle='#f5f5f5';ctx.fillRect(0,0,c.width,c.height);for(let i=0;i<snake.length;i++){ctx.fillStyle=i?"#00c7b1":"#62d84e";ctx.fillRect(snake[i][0]*sz,snake[i][1]*sz,sz-1,sz-1)}ctx.fillStyle='#d01547';ctx.fillRect(food[0]*sz,food[1]*sz,sz-1,sz-1)}function step(){if(!alive)return;let [hx,hy]=snake[0],d=dir;switch(d){case'l':hx--;break;case'r':hx++;break;case'u':hy--;break;case'd':hy++;break}if(hx<0||hx>=cells||hy<0||hy>=cells||snake.some(([x,y])=>x===hx&&y===hy)){alive=0;setStatus('Game over!');return}snake.unshift([hx,hy]);if(hx===food[0]&&hy===food[1]){score++;updateScore();food=randFood();setStatus(['Nice!','Keep going!','Yum!','Snake pro!'][Math.floor(Math.random()*4)])}else snake.pop();draw()}let loop;function start(){clearInterval(loop);loop=setInterval(()=>{if(moveQ.length){let d=moveQ.shift();if((d==='l'&&dir!=='r')||(d==='r'&&dir!=='l')||(d==='u'&&dir!=='d')||(d==='d'&&dir!=='u'))dir=d}step()},110)}document.getElementById('restart').onclick=()=>{reset();start()};document.addEventListener('keydown',e=>{const k=e.key;let d=dir;if(k==='ArrowLeft')d='l';else if(k==='ArrowRight')d='r';else if(k==='ArrowUp')d='u';else if(k==='ArrowDown')d='d';else return;if(alive)moveQ.push(d)});c.addEventListener('touchstart',handleTouchStart,false);c.addEventListener('touchmove',handleTouchMove,false);let x0=null,y0=null;function handleTouchStart(e){const t=e.touches[0];x0=t.clientX;y0=t.clientY}function handleTouchMove(e){if(!x0||!y0)return;let x1=e.touches[0].clientX,y1=e.touches[0].clientY,dx=x1-x0,dy=y1-y0;if(Math.abs(dx)>Math.abs(dy)){if(dx>0)moveQ.push('r');else moveQ.push('l')}else{if(dy>0)moveQ.push('d');else moveQ.push('u')}x0=y0=null}c.focus();reset();start();
   </script>
 </body>
 </html>
