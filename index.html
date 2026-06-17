@@ -6,86 +6,75 @@
   <title>AI Agent Demo | TechFest</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Outfit',sans-serif;background:#ffffff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;}
-    .header-img{width:100%;display:block;min-height:100px;background:#061525;}
-    .w{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
-    .c{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;max-width:420px;width:100%;padding:28px 20px 20px 20px;box-sizing:border-box;}
-    .t{font-size:1.5rem;font-weight:700;margin-bottom:12px;text-align:center;}
-    .q{margin-bottom:18px;}
-    .qtxt{font-weight:500;margin-bottom:10px;}
-    .opts{display:flex;flex-direction:column;gap:8px;}
-    .opt{background:rgba(255,255,255,1);border:1px solid rgba(0,0,0,0.15);border-radius:8px;padding:10px 14px;cursor:pointer;transition:background 0.1s;}
-    .opt.sel{border-color:#d11547;background:#f0f0f0;}
-    .opt.corr{border-color:#62d84e;background:#eafbe6;}
-    .opt.wrong{border-color:#d11547;background:#ffeaea;}
-    .btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#1a1a1a;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;margin-top:18px;width:100%;font-size:1rem;}
-    .btn:active{transform:translateY(1px);}
-    .score{font-size:1.2rem;font-weight:600;text-align:center;margin:18px 0 8px 0;}
-    .desc{color:#7a9bb5;font-size:0.98rem;text-align:center;margin-bottom:18px;}
-    @media(max-width:500px){.c{padding:16px 4vw;max-width:98vw;}}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Outfit',sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+    .header-img{width:100%;display:block;min-height:100px;background:#061525}
+    .quiz-card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;max-width:420px;width:100%;padding:32px 24px;box-shadow:0 2px 8px rgba(0,0,0,0.03)}
+    .q{font-size:1.15rem;font-weight:600;margin-bottom:18px}
+    .choices{display:grid;gap:12px;margin-bottom:18px}
+    .btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;transition:transform .1s}
+    .btn:active{transform:scale(0.97)}
+    .btn[disabled]{opacity:.6;cursor:not-allowed}
+    .score{font-size:1.1rem;margin-bottom:12px;color:#00c7b1}
+    .feedback{font-size:1rem;margin-bottom:10px;font-weight:500}
+    .restart{margin-top:18px;background:#00c7b1;color:#fff}
   </style>
 </head>
 <body>
-  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="header-img" alt="Header" />
-  <div class="w">
-    <div class="c" id="quiz">
-      <div class="t">ServiceNow Versions Quiz</div>
-      <div class="desc">Test your knowledge of ServiceNow releases and features (as of June 2026).</div>
-      <div id="qarea"></div>
-      <button class="btn" id="nextBtn" style="display:none;">Next</button>
-      <div id="scoreArea" style="display:none;"></div>
-      <button class="btn" id="restartBtn" style="display:none;">Restart Quiz</button>
+  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="header-img" alt="Header" style="min-height:100px;background:#061525;" />
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;">
+    <div class="quiz-card" id="quiz">
+      <div class="score" id="score"></div>
+      <div class="q" id="question"></div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="btn restart" id="restart" style="display:none">Restart Quiz</button>
     </div>
   </div>
   <script>
-    const qs=[
-      {q:"What is the codename for the ServiceNow release in Q1 2026?",a:["Zurich","Washington","Vancouver","Tokyo"],c:1},
-      {q:"Which release introduced the 'AI Search' feature?",a:["Orlando","Paris","Rome","San Diego"],c:2},
-      {q:"What is the main focus of the ServiceNow Vancouver release?",a:["Employee Experience","AI & Automation","Security Operations","ITOM"],c:1},
-      {q:"Which version came immediately before Washington?",a:["Vancouver","Tokyo","Utah","San Diego"],c:0},
-      {q:"What is the ServiceNow release cycle frequency?",a:["Annually","Every 6 months","Every 2 years","Quarterly"],c:1}
+    const quiz=[
+      {q:"What is the primary purpose of ServiceNow?",a:["IT Service Management","Customer Relationship Management","E-commerce Platform","Social Networking"],c:0},
+      {q:"Which module helps automate business processes in ServiceNow?",a:["Incident","Workflow","Knowledge","Asset"],c:1},
+      {q:"What is a 'table' in ServiceNow?",a:["A database structure to store records","A UI widget","A report type","A user role"],c:0},
+      {q:"Which scripting language is used in ServiceNow for server-side logic?",a:["Python","JavaScript","Ruby","PHP"],c:1},
+      {q:"What is the best practice for customizing ServiceNow?",a:["Update base code directly","Use update sets and scoped apps","Edit database tables manually","Disable system logs"],c:1}
     ];
-    let qi=0,score=0,answered=false;
-    const qarea=document.getElementById('qarea'),nextBtn=document.getElementById('nextBtn'),scoreArea=document.getElementById('scoreArea'),restartBtn=document.getElementById('restartBtn');
+    let idx=0,score=0,answered=false;
+    const qEl=document.getElementById('question'),cEl=document.getElementById('choices'),fEl=document.getElementById('feedback'),sEl=document.getElementById('score'),rEl=document.getElementById('restart');
     function showQ(){
-      answered=false;
-      nextBtn.style.display="none";
-      scoreArea.style.display="none";
-      restartBtn.style.display="none";
-      const q=qs[qi];
-      let h=`<div class=\"q\"><div class=\"qtxt\">${qi+1}. ${q.q}</div><div class=\"opts\">`;
-      q.a.forEach((o,i)=>{h+=`<div class=\"opt\" data-i=\"${i}\">${o}</div>`});
-      h+="</div></div>";
-      qarea.innerHTML=h;
-      document.querySelectorAll('.opt').forEach(el=>el.onclick=onOpt);
-    }
-    function onOpt(e){
-      if(answered)return;
-      answered=true;
-      const idx=+e.currentTarget.dataset.i;
-      document.querySelectorAll('.opt').forEach((el,i)=>{
-        el.classList.add(i===qs[qi].c?"corr":(i===idx?"wrong":""));
-        if(i===idx)el.classList.add("sel");
+      answered=false;fEl.textContent='';
+      sEl.textContent=`Question ${idx+1} of 5 | Score: ${score}`;
+      const q=quiz[idx];qEl.textContent=q.q;
+      cEl.innerHTML='';
+      q.a.forEach((t,i)=>{
+        const b=document.createElement('button');
+        b.className='btn';b.textContent=t;
+        b.onclick=()=>ans(i);
+        cEl.appendChild(b);
       });
-      if(idx===qs[qi].c)score++;
-      nextBtn.style.display="block";
-      if(qi===qs.length-1)nextBtn.textContent="Show Score";
-      else nextBtn.textContent="Next";
     }
-    nextBtn.onclick=()=>{
-      if(qi<qs.length-1){qi++;showQ();}
-      else showScore();
-    };
-    function showScore(){
-      qarea.innerHTML="";
-      scoreArea.style.display="block";
-      scoreArea.innerHTML=`<div class=\"score\">You scored ${score} out of ${qs.length}!</div>`;
-      restartBtn.style.display="block";
+    function ans(i){
+      if(answered)return;answered=true;
+      const q=quiz[idx];
+      if(i===q.c){score++;fEl.textContent='Correct!';fEl.style.color='#62d84e'}
+      else{fEl.textContent=`Incorrect. Correct answer: ${q.a[q.c]}`;fEl.style.color='#d81547'}
+      Array.from(cEl.children).forEach((b,j)=>b.disabled=true);
+      setTimeout(()=>{nextQ()},900);
     }
-    restartBtn.onclick=()=>{
-      qi=0;score=0;showQ();
-    };
+    function nextQ(){
+      idx++;
+      if(idx<quiz.length){showQ()}
+      else{showRes()}
+    }
+    function showRes(){
+      qEl.textContent='Quiz Complete!';
+      cEl.innerHTML='';
+      fEl.textContent=`Your final score: ${score} / 5`;
+      fEl.style.color='#00c7b1';
+      rEl.style.display='inline-block';
+      sEl.textContent='';
+    }
+    rEl.onclick=()=>{idx=0;score=0;rEl.style.display='none';showQ()};
     showQ();
   </script>
 </body>
