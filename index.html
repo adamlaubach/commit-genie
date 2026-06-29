@@ -8,25 +8,57 @@
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
     body{font-family:'Outfit',sans-serif;background:#ffffff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
-    .header-img{width:100%;display:block;min-height:100px;background:#061525;}
-    .content{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
-    .card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:32px 28px;box-shadow:0 0 20px rgba(208,21,71,0.08);max-width:400px;width:100%;text-align:center;}
-    .cta-btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#ffffff;font-weight:700;border:none;border-radius:10px;padding:12px 24px;font-size:1.1rem;cursor:pointer;transition:transform 0.1s;}
-    .cta-btn:active{transform:translateY(2px);}
-    @media(max-width:500px){.card{padding:18px 8px;}}
+    .himg,.fimg{width:100%;display:block;}
+    .himg{min-height:100px;background:#061525;}
+    .fimg{min-height:28px;background:#0a1f33;}
+    .c{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+    .card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;max-width:700px;width:100%;padding:32px 28px;box-shadow:0 0 20px rgba(208,21,71,0.08);}
+    .card h1{font-size:2.1rem;font-weight:700;margin-bottom:18px;}
+    .card h2{font-size:1.2rem;font-weight:600;margin:22px 0 10px 0;}
+    .card p{margin-bottom:14px;line-height:1.6;}
+    .card ul{margin:0 0 14px 18px;}
+    .card li{margin-bottom:7px;}
+    .card .meta{color:#555;font-size:0.98rem;margin-top:18px;}
+    @media(max-width:600px){.card{padding:18px 6px;max-width:98vw;}}
   </style>
 </head>
 <body>
-  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="header-img" alt="Header" />
-  <div class="content">
+  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="himg" alt="Header" />
+  <div class="c">
     <div class="card">
-      <h1 style="margin-bottom:18px;font-size:2rem;">Welcome to Your AI Agent Demo!</h1>
-      <p style="margin-bottom:24px;color:#7a9bb5;">This page is ready to publish to GitHub. Click below to proceed.</p>
-      <button id="publishBtn" class="cta-btn">Publish to GitHub</button>
+      <h1>What is an AI Agent? Understanding the Basics</h1>
+      <p>AI agents are autonomous software entities that perceive their environment, make decisions, and act to achieve specific goals. They are the building blocks of modern intelligent systems, powering everything from chatbots to self-driving cars.</p>
+      <h2>Key Characteristics</h2>
+      <ul>
+        <li><b>Autonomy:</b> Operate independently, making decisions without constant human input.</li>
+        <li><b>Perception:</b> Sense data from their environment (e.g., text, images, sensors).</li>
+        <li><b>Reasoning:</b> Analyze information and plan actions to achieve objectives.</li>
+        <li><b>Action:</b> Interact with digital or physical environments to carry out tasks.</li>
+      </ul>
+      <h2>Types of AI Agents</h2>
+      <ul>
+        <li><b>Simple Reflex Agents:</b> Respond directly to current inputs.</li>
+        <li><b>Model-Based Agents:</b> Maintain internal state to handle more complex situations.</li>
+        <li><b>Goal-Based Agents:</b> Make decisions based on desired outcomes.</li>
+        <li><b>Learning Agents:</b> Improve performance over time by learning from experience.</li>
+      </ul>
+      <h2>Applications</h2>
+      <ul>
+        <li>Virtual assistants (e.g., Siri, Alexa)</li>
+        <li>Customer support chatbots</li>
+        <li>Autonomous vehicles</li>
+        <li>Recommendation systems</li>
+        <li>Process automation in business workflows</li>
+      </ul>
+      <h2>Why Are AI Agents Important?</h2>
+      <p>AI agents enable automation, efficiency, and intelligent decision-making across industries. By handling repetitive or complex tasks, they free up humans to focus on creativity and strategic work.</p>
+      <div class="meta">Last updated: June 29, 2026 &nbsp;|&nbsp; Author: Commit Genie 🧞</div>
     </div>
   </div>
+  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="fimg" alt="Footer" />
   <script>
-    document.getElementById('publishBtn').addEventListener('click',function(){alert('Ready to publish! Please confirm below to push this page to GitHub.')});
+    // Minimal interactivity: show article last updated date in alert on double-click
+    document.querySelector('.card').ondblclick=function(){alert('Knowledge article last updated: June 29, 2026');};
   </script>
 </body>
 </html>
