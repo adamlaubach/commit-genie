@@ -6,60 +6,27 @@
   <title>AI Agent Demo | TechFest</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Outfit',sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
-    .header-img,.footer-img{width:100%;display:block;flex-shrink:0;min-height:100px;background:#061525}
-    .footer-img{min-height:28px;background:#0a1f33}
-    .wrapper{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
-    .card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04);padding:32px 24px;max-width:340px;width:100%;text-align:center}
-    .title{font-size:2rem;font-weight:700;margin-bottom:16px;letter-spacing:1px}
-    .board{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(3,64px);gap:8px;margin:24px auto}
-    .cell{width:64px;height:64px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:600;background:#f5f5f5;border-radius:8px;cursor:pointer;transition:background 0.2s}
-    .cell:hover{background:#e0ffe6}
-    .status{font-size:1.1rem;margin:12px 0 18px 0;color:#00a37a;font-weight:500;min-height:24px}
-    .btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;font-size:1rem;margin-top:10px;transition:transform 0.1s}
-    .btn:active{transform:scale(0.97)}
-    @media(max-width:500px){.card{padding:16px 4px}.board{grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px)}.cell{width:48px;height:48px;font-size:1.3rem}}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Outfit',sans-serif;background:#ffffff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
+    .header-img{width:100%;display:block;min-height:100px;background:#061525;}
+    .content{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+    .card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:32px 28px;box-shadow:0 0 20px rgba(208,21,71,0.08);max-width:400px;width:100%;text-align:center;}
+    .cta-btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#ffffff;font-weight:700;border:none;border-radius:10px;padding:12px 24px;font-size:1.1rem;cursor:pointer;transition:transform 0.1s;}
+    .cta-btn:active{transform:translateY(2px);}
+    @media(max-width:500px){.card{padding:18px 8px;}}
   </style>
 </head>
 <body>
   <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="header-img" alt="Header" />
-  <div class="wrapper">
+  <div class="content">
     <div class="card">
-      <div class="title">Tic Tac Toe</div>
-      <div class="status" id="status"></div>
-      <div class="board" id="board">
-        <div class="cell" data-idx="0"></div>
-        <div class="cell" data-idx="1"></div>
-        <div class="cell" data-idx="2"></div>
-        <div class="cell" data-idx="3"></div>
-        <div class="cell" data-idx="4"></div>
-        <div class="cell" data-idx="5"></div>
-        <div class="cell" data-idx="6"></div>
-        <div class="cell" data-idx="7"></div>
-        <div class="cell" data-idx="8"></div>
-      </div>
-      <button class="btn" id="restart">Restart</button>
+      <h1 style="margin-bottom:18px;font-size:2rem;">Welcome to Your AI Agent Demo!</h1>
+      <p style="margin-bottom:24px;color:#7a9bb5;">This page is ready to publish to GitHub. Click below to proceed.</p>
+      <button id="publishBtn" class="cta-btn">Publish to GitHub</button>
     </div>
   </div>
-  <img src="[footer_image_url]" class="footer-img" alt="Footer" />
   <script>
-    const board=document.getElementById('board');
-    const statusDiv=document.getElementById('status');
-    const restartBtn=document.getElementById('restart');
-    let cells=Array.from(document.querySelectorAll('.cell'));
-    let game,turn;
-    const winCombos=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    const taunts=["Nice move!","Try to block!","Who's next?","Keep going!","Great play!","Ooh, close one!","Watch out!","Smart!","Tense!","Almost there!"];
-    function randomTaunt(){return taunts[Math.floor(Math.random()*taunts.length)];}
-    function setStatus(msg){statusDiv.textContent=msg;}
-    function checkWin(){for(let c of winCombos){let[a,b,c2]=c;if(game[a]&&game[a]===game[b]&&game[a]===game[c2])return game[a];}return null;}
-    function checkDraw(){return game.every(x=>x);}
-    function handleCell(e){let idx=+e.target.dataset.idx;if(game[idx]||checkWin())return;game[idx]=turn;e.target.textContent=turn;let winner=checkWin();if(winner){setStatus(winner+" wins!");return;}if(checkDraw()){setStatus("It's a draw!");return;}turn=turn==='X'?'O':'X';setStatus(turn+"'s turn. "+randomTaunt());}
-    function restart(){game=Array(9).fill("");turn='X';cells.forEach(c=>c.textContent="");setStatus("X's turn. Let's play!");}
-    board.addEventListener('click',e=>{if(e.target.classList.contains('cell'))handleCell(e);});
-    restartBtn.addEventListener('click',restart);
-    restart();
+    document.getElementById('publishBtn').addEventListener('click',function(){alert('Ready to publish! Please confirm below to push this page to GitHub.')});
   </script>
 </body>
 </html>
