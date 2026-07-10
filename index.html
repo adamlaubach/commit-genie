@@ -6,53 +6,65 @@
   <title>AI Agent Demo | TechFest</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Outfit',sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
-    .header-img{width:100%;display:block;min-height:100px;background:#061525}
-    .footer-img{width:100%;display:block;min-height:28px;background:#0a1f33}
-    .wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
-    .card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:32px 28px;box-shadow:0 2px 8px rgba(0,0,0,0.04);max-width:340px;width:100%}
-    .title{font-size:2rem;font-weight:700;text-align:center;margin-bottom:18px}
-    .board{display:grid;grid-template-columns:repeat(3,60px);grid-gap:8px;justify-content:center;margin:18px 0}
-    .cell{width:60px;height:60px;font-size:2.1rem;font-weight:600;display:flex;align-items:center;justify-content:center;background:#f5f5f5;border-radius:8px;cursor:pointer;transition:background .1s}
-    .cell:hover{background:#e0e0e0}
-    .status{font-size:1.1rem;text-align:center;margin-bottom:12px;min-height:28px}
-    .btn{display:block;margin:18px auto 0 auto;padding:10px 24px;background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;cursor:pointer;font-size:1rem;transition:transform .1s}
-    .btn:active{transform:scale(0.97)}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Outfit',sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
+    .header-img{width:100%;display:block;min-height:100px;background:#061525;}
+    .game-card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:32px 24px;box-shadow:0 2px 8px rgba(0,0,0,0.04);max-width:340px;width:100%;}
+    .status{font-size:1.1rem;font-weight:600;margin-bottom:18px;text-align:center;min-height:28px;}
+    .board{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);gap:8px;justify-content:center;margin-bottom:18px;}
+    .cell{width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:2.1rem;font-weight:700;background:#f5f5f5;border-radius:8px;cursor:pointer;transition:background 0.1s;user-select:none;}
+    .cell:hover{background:#e0ffe6;}
+    .cell.filled{cursor:default;color:#7a9bb5;}
+    .btn{display:block;margin:0 auto;background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;font-size:1rem;cursor:pointer;transition:transform 0.1s;}
+    .btn:active{transform:scale(0.97);}
+    @media(max-width:500px){.game-card{padding:18px 4px;}.board{gap:4px;}.cell{width:40px;height:40px;font-size:1.3rem;}}
   </style>
 </head>
 <body>
   <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="header-img" alt="Header" />
-  <div class="wrap">
-    <div class="card">
-      <div class="title">Tic Tac Toe</div>
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;">
+    <div class="game-card">
       <div class="status" id="status"></div>
-      <div class="board" id="board">
-        <div class="cell" data-idx="0"></div>
-        <div class="cell" data-idx="1"></div>
-        <div class="cell" data-idx="2"></div>
-        <div class="cell" data-idx="3"></div>
-        <div class="cell" data-idx="4"></div>
-        <div class="cell" data-idx="5"></div>
-        <div class="cell" data-idx="6"></div>
-        <div class="cell" data-idx="7"></div>
-        <div class="cell" data-idx="8"></div>
-      </div>
+      <div class="board" id="board"></div>
       <button class="btn" id="restart">Restart</button>
     </div>
   </div>
-  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="footer-img" alt="Footer" />
   <script>
     let board=["","","","","","","","",""];
-    let current="X",gameOn=true;
-    const status=document.getElementById("status"),cells=[...document.querySelectorAll(".cell")],winComb=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    function setStatus(msg){status.textContent=msg}
-    function checkWin(){for(let c of winComb){const[a,b,d]=c;if(board[a]&&board[a]===board[b]&&board[a]===board[d])return board[a];}return board.includes("")?null:"draw"}
-    function handleClick(e){const idx=+e.target.dataset.idx;if(!gameOn||board[idx])return;board[idx]=current;e.target.textContent=current;const res=checkWin();if(res){gameOn=false;setStatus(res==="draw"?"It's a draw!":`Player ${res} wins!`);}else{current=current==="X"?"O":"X";setStatus(`Player ${current}'s turn`);}}
-    function restart(){board=["","","","","","","","",""];cells.forEach(c=>c.textContent="");current="X";gameOn=true;setStatus("Player X's turn")}
-    cells.forEach(c=>c.addEventListener("click",handleClick));
-    document.getElementById("restart").onclick=restart;
-    restart();
+    let current="X",gameOver=false;
+    const status=document.getElementById("status"),
+    boardDiv=document.getElementById("board"),
+    restartBtn=document.getElementById("restart");
+    function render(){
+      boardDiv.innerHTML="";
+      board.forEach((v,i)=>{
+        const c=document.createElement("div");
+        c.className="cell"+(v?" filled":"");
+        c.textContent=v;
+        c.onclick=()=>move(i);
+        boardDiv.appendChild(c);
+      });
+      status.textContent=gameOver?getResult():`Player ${current}'s turn`;
+    }
+    function move(i){
+      if(gameOver||board[i])return;
+      board[i]=current;
+      if(checkWin()){gameOver=true;}
+      else if(board.every(x=>x)){gameOver=true;}
+      else{current=current=="X"?"O":"X";}
+      render();
+    }
+    function checkWin(){
+      const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+      return w.some(a=>a.every(i=>board[i]==current));
+    }
+    function getResult(){
+      if(checkWin())return`Player ${current} wins!`;
+      if(board.every(x=>x))return"It's a draw!";
+      return"";
+    }
+    restartBtn.onclick=()=>{board=["","","","","","","","",""];current="X";gameOver=false;render();};
+    render();
   </script>
 </body>
 </html>
