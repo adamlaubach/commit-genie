@@ -7,64 +7,86 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Outfit',sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
-    .header-img{width:100%;display:block;min-height:100px;background:#061525;}
-    .game-card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:32px 24px;box-shadow:0 2px 8px rgba(0,0,0,0.04);max-width:340px;width:100%;}
-    .status{font-size:1.1rem;font-weight:600;margin-bottom:18px;text-align:center;min-height:28px;}
-    .board{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);gap:8px;justify-content:center;margin-bottom:18px;}
-    .cell{width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:2.1rem;font-weight:700;background:#f5f5f5;border-radius:8px;cursor:pointer;transition:background 0.1s;user-select:none;}
-    .cell:hover{background:#e0ffe6;}
-    .cell.filled{cursor:default;color:#7a9bb5;}
-    .btn{display:block;margin:0 auto;background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;font-size:1rem;cursor:pointer;transition:transform 0.1s;}
-    .btn:active{transform:scale(0.97);}
-    @media(max-width:500px){.game-card{padding:18px 4px;}.board{gap:4px;}.cell{width:40px;height:40px;font-size:1.3rem;}}
+    body{font-family:'Outfit',sans-serif;background:#ffffff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden;}
+    .header-img,.footer-img{width:100%;display:block;flex-shrink:0;}
+    .qwrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+    .card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:32px 24px;max-width:420px;width:100%;box-shadow:0 2px 8px rgba(0,0,0,0.03);}
+    .q{font-size:1.1rem;font-weight:600;margin-bottom:18px;}
+    .opts{margin-bottom:18px;}
+    .opt{display:block;margin-bottom:10px;}
+    .opt input{margin-right:8px;}
+    .btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#fff;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;transition:transform .1s;}
+    .btn:active{transform:translateY(1px);}
+    .stat{margin-top:10px;font-size:.98rem;min-height:24px;}
+    .score{font-size:1.2rem;font-weight:700;margin-bottom:10px;}
+    @media(max-width:500px){.card{padding:18px 4px;}}
   </style>
 </head>
 <body>
-  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="header-img" alt="Header" />
-  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px;">
-    <div class="game-card">
-      <div class="status" id="status"></div>
-      <div class="board" id="board"></div>
-      <button class="btn" id="restart">Restart</button>
+  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="header-img" alt="Header" style="min-height:100px;background:#061525;" />
+  <div class="qwrap">
+    <div class="card" id="quiz">
+      <div class="score" id="score"></div>
+      <div class="q" id="question"></div>
+      <div class="opts" id="options"></div>
+      <button class="btn" id="nextBtn">Next</button>
+      <div class="stat" id="feedback"></div>
     </div>
   </div>
+  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Footer.png" class="footer-img" alt="Footer" style="min-height:28px;background:#0a1f33;" />
   <script>
-    let board=["","","","","","","","",""];
-    let current="X",gameOver=false;
-    const status=document.getElementById("status"),
-    boardDiv=document.getElementById("board"),
-    restartBtn=document.getElementById("restart");
-    function render(){
-      boardDiv.innerHTML="";
-      board.forEach((v,i)=>{
-        const c=document.createElement("div");
-        c.className="cell"+(v?" filled":"");
-        c.textContent=v;
-        c.onclick=()=>move(i);
-        boardDiv.appendChild(c);
+    const quiz=[
+      {q:"What is the name of the ServiceNow release introduced in Q1 2020?",o:["Orlando","Paris","Quebec","Rome"],a:0},
+      {q:"Which release introduced the Now Experience UI Framework?",o:["Madrid","Orlando","Paris","Quebec"],a:1},
+      {q:"In which year was the ServiceNow 'London' release launched?",o:["2017","2018","2019","2020"],a:1},
+      {q:"Which version added the Mobile Studio feature?",o:["Kingston","London","Madrid","New York"],a:3},
+      {q:"What is the codename for the ServiceNow release after 'Rome'?",o:["San Diego","Tokyo","Utah","Vancouver"],a:0}
+    ];
+    let idx=0,score=0,answered=false;
+    const qEl=document.getElementById('question'),oEl=document.getElementById('options'),fEl=document.getElementById('feedback'),sEl=document.getElementById('score'),nBtn=document.getElementById('nextBtn');
+    function showQ(){
+      sEl.textContent=`Question ${idx+1}/5 | Score: ${score}`;
+      const q=quiz[idx];
+      qEl.textContent=q.q;
+      oEl.innerHTML='';
+      q.o.forEach((opt,i)=>{
+        const d=document.createElement('label');
+        d.className='opt';
+        d.innerHTML=`<input type='radio' name='opt' value='${i}'>${opt}`;
+        oEl.appendChild(d);
       });
-      status.textContent=gameOver?getResult():`Player ${current}'s turn`;
+      fEl.textContent='';
+      answered=false;
+      nBtn.textContent=idx<4?'Next':'Finish';
     }
-    function move(i){
-      if(gameOver||board[i])return;
-      board[i]=current;
-      if(checkWin()){gameOver=true;}
-      else if(board.every(x=>x)){gameOver=true;}
-      else{current=current=="X"?"O":"X";}
-      render();
+    oEl.onclick=e=>{
+      if(answered)return;
+      if(e.target.name==='opt'){
+        answered=true;
+        const sel=+e.target.value;
+        if(sel===quiz[idx].a){
+          fEl.textContent='Correct!';
+          score++;
+        }else{
+          fEl.textContent=`Incorrect. Answer: ${quiz[idx].o[quiz[idx].a]}`;
+        }
+      }
+    };
+    nBtn.onclick=()=>{
+      if(!answered)return;
+      idx++;
+      if(idx<5)showQ();
+      else showRes();
+    };
+    function showRes(){
+      qEl.textContent='Quiz Complete!';
+      oEl.innerHTML='';
+      fEl.textContent='';
+      sEl.textContent=`Final Score: ${score}/5`;
+      nBtn.textContent='Restart';
+      nBtn.onclick=()=>{idx=0;score=0;showQ();};
     }
-    function checkWin(){
-      const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-      return w.some(a=>a.every(i=>board[i]==current));
-    }
-    function getResult(){
-      if(checkWin())return`Player ${current} wins!`;
-      if(board.every(x=>x))return"It's a draw!";
-      return"";
-    }
-    restartBtn.onclick=()=>{board=["","","","","","","","",""];current="X";gameOver=false;render();};
-    render();
+    showQ();
   </script>
 </body>
 </html>
