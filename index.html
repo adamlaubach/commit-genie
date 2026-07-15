@@ -8,80 +8,44 @@
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Outfit',sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
-    .header-img{width:100%;display:block;min-height:100px;background:#061525}
-    .ttt-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
-    .ttt-card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:28px 18px;max-width:340px;width:100%;text-align:center}
-    .ttt-title{font-size:2rem;font-weight:700;margin-bottom:10px}
-    .ttt-status{color:#00c7b1;font-weight:600;margin-bottom:14px;min-height:24px}
-    .ttt-board{display:grid;grid-template-columns:repeat(3,60px);grid-gap:8px;justify-content:center;margin-bottom:14px}
-    .ttt-cell{width:60px;height:60px;font-size:2.2rem;font-weight:700;display:flex;align-items:center;justify-content:center;background:#f5f5f5;border-radius:8px;cursor:pointer}
-    .ttt-cell:hover{background:#e8f4f8}
-    .ttt-btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;font-size:1rem;margin-top:8px}
-    .ttt-btn:active{transform:translateY(2px)}
-    @media(max-width:500px){.ttt-card{padding:12px 2px}.ttt-board{grid-template-columns:repeat(3,40px)}.ttt-cell{width:40px;height:40px;font-size:1.3rem}}
+    .header-img,.footer-img{width:100%;display:block;flex-shrink:0}
+    .gwrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+    .card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:32px 24px;max-width:370px;width:100%;box-shadow:0 2px 8px rgba(0,0,0,0.03)}
+    .title{font-size:2rem;font-weight:700;margin-bottom:8px;text-align:center}
+    .desc{color:#7a9bb5;font-size:1rem;text-align:center;margin-bottom:18px}
+    .board{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);gap:8px;justify-content:center;margin:18px 0}
+    .cell{background:#f5f5f5;border:1px solid #e0e0e0;border-radius:8px;font-size:2.1rem;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .1s;min-width:60px;min-height:60px}
+    .cell:hover{background:#e8f4f8}
+    .status{font-size:1.1rem;font-weight:500;text-align:center;margin-bottom:12px;min-height:28px}
+    .btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;display:block;margin:0 auto;font-size:1rem;transition:transform .1s}
+    .btn:active{transform:scale(0.97)}
+    @media(max-width:500px){.card{padding:18px 4px}.board{gap:5px}.cell{font-size:1.5rem;min-width:38px;min-height:38px}}
   </style>
 </head>
 <body>
-  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="header-img" alt="Header" />
-  <div class="ttt-wrap">
-    <div class="ttt-card">
-      <div class="ttt-title">Tic Tac Toe</div>
-      <div class="ttt-status" id="ttt-status">Player X's turn</div>
-      <div class="ttt-board" id="ttt-board">
-        <div class="ttt-cell"></div>
-        <div class="ttt-cell"></div>
-        <div class="ttt-cell"></div>
-        <div class="ttt-cell"></div>
-        <div class="ttt-cell"></div>
-        <div class="ttt-cell"></div>
-        <div class="ttt-cell"></div>
-        <div class="ttt-cell"></div>
-        <div class="ttt-cell"></div>
+  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="header-img" alt="Header" style="min-height:100px;background:#061525;" />
+  <div class="gwrap">
+    <div class="card">
+      <div class="title">Tic Tac Toe</div>
+      <div class="desc">Two players take turns. First to get 3 in a row wins!</div>
+      <div class="status" id="status">Player X's turn</div>
+      <div class="board" id="board">
+        <div class="cell" data-i="0"></div>
+        <div class="cell" data-i="1"></div>
+        <div class="cell" data-i="2"></div>
+        <div class="cell" data-i="3"></div>
+        <div class="cell" data-i="4"></div>
+        <div class="cell" data-i="5"></div>
+        <div class="cell" data-i="6"></div>
+        <div class="cell" data-i="7"></div>
+        <div class="cell" data-i="8"></div>
       </div>
-      <button class="ttt-btn" id="ttt-reset">Reset Game</button>
+      <button class="btn" id="reset">Reset Game</button>
     </div>
   </div>
+  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="footer-img" alt="Footer" style="min-height:28px;background:#0a1f33;" />
   <script>
-    let board = Array(9).fill("");
-    let current = "X";
-    let gameOver = false;
-    const status = document.getElementById("ttt-status");
-    const cells = Array.from(document.querySelectorAll(".ttt-cell"));
-    const boardDiv = document.getElementById("ttt-board");
-    const resetBtn = document.getElementById("ttt-reset");
-    function checkWin(b){
-      const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-      for(let l of w){
-        if(b[l[0]]&&b[l[0]]===b[l[1]]&&b[l[1]]===b[l[2]])return b[l[0]];
-      }
-      return b.every(x=>x)?"draw":null;
-    }
-    function update(){
-      for(let i=0;i<9;i++)cells[i].textContent=board[i];
-      let res=checkWin(board);
-      if(res){
-        gameOver=true;
-        status.textContent=res=="draw"?"It's a draw!":`Player ${res} wins!`;
-      }else{
-        status.textContent=`Player ${current}'s turn`;
-      }
-    }
-    boardDiv.addEventListener("click",e=>{
-      if(gameOver)return;
-      let idx=cells.indexOf(e.target);
-      if(idx>-1&&!board[idx]){
-        board[idx]=current;
-        current=current=="X"?"O":"X";
-        update();
-      }
-    });
-    resetBtn.onclick=()=>{
-      board=Array(9).fill("");
-      current="X";
-      gameOver=false;
-      update();
-    };
-    update();
+    let board=["","","","","","","","",""];let current="X",playing=true;const winComb=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];const cells=[...document.querySelectorAll('.cell')],status=document.getElementById('status'),reset=document.getElementById('reset');function checkWin(){for(let c of winComb){const[a,b,d]=c;if(board[a]&&board[a]===board[b]&&board[a]===board[d])return board[a];}return null}function checkDraw(){return board.every(x=>x)}function updateStatus(msg){status.textContent=msg}function handleClick(e){const i=+e.target.dataset.i;if(!playing||board[i])return;board[i]=current;e.target.textContent=current;const winner=checkWin();if(winner){updateStatus(`Player ${winner} wins! 🎉`);playing=false;return;}if(checkDraw()){updateStatus("It's a draw!");playing=false;return;}current=current=="X"?"O":"X";updateStatus(`Player ${current}'s turn`)}cells.forEach(c=>c.addEventListener('click',handleClick));reset.onclick=()=>{board=["","","","","","","","",""];cells.forEach(c=>c.textContent="");current="X";playing=true;updateStatus("Player X's turn")}
   </script>
 </body>
 </html>
