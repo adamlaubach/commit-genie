@@ -7,74 +7,81 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Outfit',sans-serif;background:#ffffff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+    body{font-family:'Outfit',sans-serif;background:#fff;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
     .header-img{width:100%;display:block;min-height:100px;background:#061525}
-    .game-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
-    .ttt-card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:32px 24px;box-shadow:0 0 20px rgba(208,21,71,0.08);max-width:340px;width:100%;text-align:center}
-    .ttt-title{font-size:2rem;font-weight:700;margin-bottom:12px}
-    .ttt-status{color:#00c7b1;font-weight:600;margin-bottom:18px;min-height:24px}
-    .ttt-board{display:grid;grid-template-columns:repeat(3,60px);grid-gap:8px;justify-content:center;margin-bottom:18px}
-    .ttt-cell{width:60px;height:60px;font-size:2.2rem;font-weight:700;display:flex;align-items:center;justify-content:center;background:#f5f5f5;border-radius:8px;cursor:pointer;transition:background .1s}
+    .ttt-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+    .ttt-card{background:rgba(255,255,255,0.95);border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:28px 18px;max-width:340px;width:100%;text-align:center}
+    .ttt-title{font-size:2rem;font-weight:700;margin-bottom:10px}
+    .ttt-status{color:#00c7b1;font-weight:600;margin-bottom:14px;min-height:24px}
+    .ttt-board{display:grid;grid-template-columns:repeat(3,60px);grid-gap:8px;justify-content:center;margin-bottom:14px}
+    .ttt-cell{width:60px;height:60px;font-size:2.2rem;font-weight:700;display:flex;align-items:center;justify-content:center;background:#f5f5f5;border-radius:8px;cursor:pointer}
     .ttt-cell:hover{background:#e8f4f8}
-    .ttt-btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;font-size:1rem;margin-top:8px;transition:transform .1s}
+    .ttt-btn{background:linear-gradient(135deg,#62d84e,#00c7b1);color:#061525;font-weight:700;border:none;border-radius:10px;padding:12px 24px;cursor:pointer;font-size:1rem;margin-top:8px}
     .ttt-btn:active{transform:translateY(2px)}
-    @media(max-width:500px){.ttt-card{padding:18px 4px}.ttt-board{grid-template-columns:repeat(3,40px)}.ttt-cell{width:40px;height:40px;font-size:1.3rem}}
+    @media(max-width:500px){.ttt-card{padding:12px 2px}.ttt-board{grid-template-columns:repeat(3,40px)}.ttt-cell{width:40px;height:40px;font-size:1.3rem}}
   </style>
 </head>
 <body>
-  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="header-img" alt="Header" style="min-height:100px;background:#061525;" />
-  <div class="game-wrap">
+  <img src="https://raw.githubusercontent.com/adamlaubach/commit-genie/main/Dev_Demo_Header.png" class="header-img" alt="Header" />
+  <div class="ttt-wrap">
     <div class="ttt-card">
       <div class="ttt-title">Tic Tac Toe</div>
       <div class="ttt-status" id="ttt-status">Player X's turn</div>
       <div class="ttt-board" id="ttt-board">
-        <div class="ttt-cell" data-idx="0"></div>
-        <div class="ttt-cell" data-idx="1"></div>
-        <div class="ttt-cell" data-idx="2"></div>
-        <div class="ttt-cell" data-idx="3"></div>
-        <div class="ttt-cell" data-idx="4"></div>
-        <div class="ttt-cell" data-idx="5"></div>
-        <div class="ttt-cell" data-idx="6"></div>
-        <div class="ttt-cell" data-idx="7"></div>
-        <div class="ttt-cell" data-idx="8"></div>
+        <div class="ttt-cell"></div>
+        <div class="ttt-cell"></div>
+        <div class="ttt-cell"></div>
+        <div class="ttt-cell"></div>
+        <div class="ttt-cell"></div>
+        <div class="ttt-cell"></div>
+        <div class="ttt-cell"></div>
+        <div class="ttt-cell"></div>
+        <div class="ttt-cell"></div>
       </div>
       <button class="ttt-btn" id="ttt-reset">Reset Game</button>
     </div>
   </div>
   <script>
-    let board=["","","","","","","","",""];
-    let current="X",gameOn=true;
-    const status=document.getElementById("ttt-status"),cells=[...document.querySelectorAll(".ttt-cell")],resetBtn=document.getElementById("ttt-reset");
-    function checkWin(){
+    let board = Array(9).fill("");
+    let current = "X";
+    let gameOver = false;
+    const status = document.getElementById("ttt-status");
+    const cells = Array.from(document.querySelectorAll(".ttt-cell"));
+    const boardDiv = document.getElementById("ttt-board");
+    const resetBtn = document.getElementById("ttt-reset");
+    function checkWin(b){
       const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-      for(let a of w){
-        if(board[a[0]]&&board[a[0]]===board[a[1]]&&board[a[1]]===board[a[2]])return board[a[0]];
+      for(let l of w){
+        if(b[l[0]]&&b[l[0]]===b[l[1]]&&b[l[1]]===b[l[2]])return b[l[0]];
       }
-      return board.every(x=>x)?"draw":null;
+      return b.every(x=>x)?"draw":null;
     }
-    function updateStatus(){
-      let res=checkWin();
-      if(res=="X"||res=="O"){status.textContent=`Player ${res} wins!`;gameOn=false;return;}
-      if(res=="draw"){status.textContent="It's a draw!";gameOn=false;return;}
-      status.textContent=`Player ${current}'s turn`;
+    function update(){
+      for(let i=0;i<9;i++)cells[i].textContent=board[i];
+      let res=checkWin(board);
+      if(res){
+        gameOver=true;
+        status.textContent=res=="draw"?"It's a draw!":`Player ${res} wins!`;
+      }else{
+        status.textContent=`Player ${current}'s turn`;
+      }
     }
-    function cellClick(e){
-      const idx=+e.target.dataset.idx;
-      if(!gameOn||board[idx])return;
-      board[idx]=current;
-      e.target.textContent=current;
-      current=current=="X"?"O":"X";
-      updateStatus();
-    }
-    function reset(){
-      board=["","","","","","","","",""];
-      current="X";gameOn=true;
-      cells.forEach(c=>c.textContent="");
-      updateStatus();
-    }
-    cells.forEach(c=>c.addEventListener("click",cellClick));
-    resetBtn.addEventListener("click",reset);
-    updateStatus();
+    boardDiv.addEventListener("click",e=>{
+      if(gameOver)return;
+      let idx=cells.indexOf(e.target);
+      if(idx>-1&&!board[idx]){
+        board[idx]=current;
+        current=current=="X"?"O":"X";
+        update();
+      }
+    });
+    resetBtn.onclick=()=>{
+      board=Array(9).fill("");
+      current="X";
+      gameOver=false;
+      update();
+    };
+    update();
   </script>
 </body>
 </html>
